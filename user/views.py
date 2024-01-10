@@ -107,3 +107,15 @@ class UserViewSet(viewsets.ModelViewSet):
                 serializer.is_valid(raise_exception=True)
                 serializer.save()
                 return Response(serializer.data)
+
+    @action(
+        detail=False,
+        methods=["POST"],
+    )
+    def register(self, request):
+        """Endpoint for creating a profile"""
+        serializer = self.get_serializer_class()(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
