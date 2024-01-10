@@ -4,8 +4,10 @@ from rest_framework.exceptions import ValidationError
 from rest_framework.generics import get_object_or_404
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.response import Response
+from rest_framework.permissions import IsAuthenticatedOrReadOnly
 
 from social_media.models import Hashtag, Post, Comment, Like
+from social_media.permissions import IsAuthorOrReadOnly
 from social_media.serializers import (
     HashtagSerializer,
     PostSerializer,
@@ -23,6 +25,7 @@ from social_media.serializers import (
 class HashtagViewSet(viewsets.ModelViewSet):
     queryset = Hashtag.objects.all()
     serializer_class = HashtagSerializer
+    permission_classes = (IsAuthenticatedOrReadOnly, )
 
 
 class PostPagination(PageNumberPagination):
@@ -37,7 +40,7 @@ class PostViewSet(viewsets.ModelViewSet):
     )
     serializer_class = PostSerializer
     pagination_class = PostPagination
-    pagination_class = PostPagination
+    permission_classes = (IsAuthenticatedOrReadOnly, IsAuthorOrReadOnly, )
 
     def get_serializer_class(self):
         if self.action == "list":
@@ -126,6 +129,7 @@ class CommentViewSet(viewsets.ModelViewSet):
     )
     serializer_class = CommentSerializer
     pagination_class = PostPagination
+    permission_classes = (IsAuthenticatedOrReadOnly, IsAuthorOrReadOnly, )
 
     def get_serializer_class(self):
         if self.action == "list":

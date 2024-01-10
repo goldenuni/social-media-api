@@ -5,6 +5,7 @@ from rest_framework.response import Response
 from rest_framework.decorators import action
 
 from user.models import Follow
+from user.permissions import IsOwnerOrReadOnly
 from user.serializers import (
     UserSerializer,
     UserListSerializer,
@@ -22,6 +23,7 @@ class ManageUserView(generics.RetrieveUpdateAPIView):
 class UserViewSet(viewsets.ModelViewSet):
     serializer_class = UserSerializer
     queryset = get_user_model().objects.all()
+    permission_classes = (IsOwnerOrReadOnly,)
 
     def get_queryset(self):
         queryset = self.queryset
@@ -50,26 +52,32 @@ class UserViewSet(viewsets.ModelViewSet):
 
         return UserSerializer
 
-    @action(detail=True, methods=["POST", ])
+    @action(
+        detail=True,
+        methods=[
+            "POST",
+        ],
+    )
     def follow(self, request, pk=None):
-        """"Follow the user. ex: users/<pk>/follow/"""
+        """ "Follow the user. ex: users/<pk>/follow/"""
         user = request.user
         user_follow = self.get_object()
-        Follow.objects.create(
-            follower=user,
-            following=user_follow
-        )
+        Follow.objects.create(follower=user, following=user_follow)
         serializer = self.get_serializer_class()(user_follow)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
-    @action(detail=True, methods=["DELETE", ])
+    @action(
+        detail=True,
+        methods=[
+            "DELETE",
+        ],
+    )
     def unfollow(self, request, pk=None):
         """Unfollow the user. ex. users/<pk>/unfollow/"""
         user = request.user
         user_follow = self.get_object()
         follow_conn = Follow.objects.filter(
-            follower=user,
-            following=user_follow
+            follower=user, following=user_follow
         ).first()
         follow_conn.delete()
         serializer = self.get_serializer_class()(user_follow)
