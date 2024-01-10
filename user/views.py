@@ -1,8 +1,12 @@
 from django.db.models import Count
 from django.contrib.auth import get_user_model
+from drf_spectacular.utils import extend_schema
 from rest_framework import viewsets, status
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.decorators import action
+from rest_framework.views import APIView
+from rest_framework_simplejwt.tokens import RefreshToken
 
 from user.models import Follow
 from user.permissions import IsOwnerOrReadOnly
@@ -119,3 +123,26 @@ class UserViewSet(viewsets.ModelViewSet):
         serializer.save()
 
         return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+
+class LogoutView(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    @extend_schema(
+        description="Endpoint to invalidate a refresh token and log the user out.",
+        request={"refresh_token": "string"},
+        responses={
+            205: None,
+            400: "Bad Request",
+            401: "Unauthorized",
+        },
+    )
+    def post(self, request):
+        try:
+            refresh_token = request.data["refresh_token"]
+            token = RefreshToken(refresh_token)
+            token.blacklist()
+
+            return Response(status=status.HTTP_205_RESET_CONTENT)
+        except Exception as e:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
