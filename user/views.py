@@ -1,6 +1,6 @@
 from django.db.models import Count
 from django.contrib.auth import get_user_model
-from rest_framework import generics, viewsets, status
+from rest_framework import viewsets, status
 from rest_framework.response import Response
 from rest_framework.decorators import action
 
@@ -52,7 +52,10 @@ class UserViewSet(viewsets.ModelViewSet):
         ],
     )
     def follow(self, request, pk=None):
-        """Follow the user. ex: apiusers/<pk>/follow/"""
+        """
+        Endpoint for performing follow action
+        example: api/users/pk/follow/
+        """
         user = request.user
         user_follow = self.get_object()
         Follow.objects.create(follower=user, following=user_follow)
@@ -66,7 +69,11 @@ class UserViewSet(viewsets.ModelViewSet):
         ],
     )
     def unfollow(self, request, pk=None):
-        """Unfollow the user. ex. api/users/<pk>/unfollow/"""
+        """
+        Endpoint for performing unfollow action
+        example: api/users/pk/unfollow/
+        """
+
         user = request.user
         user_follow = self.get_object()
         follow_conn = Follow.objects.filter(

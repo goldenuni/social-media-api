@@ -25,7 +25,7 @@ from social_media.serializers import (
 class HashtagViewSet(viewsets.ModelViewSet):
     queryset = Hashtag.objects.all()
     serializer_class = HashtagSerializer
-    permission_classes = (IsAuthenticatedOrReadOnly, )
+    permission_classes = (IsAuthenticatedOrReadOnly,)
 
 
 class PostPagination(PageNumberPagination):
@@ -40,7 +40,10 @@ class PostViewSet(viewsets.ModelViewSet):
     )
     serializer_class = PostSerializer
     pagination_class = PostPagination
-    permission_classes = (IsAuthenticatedOrReadOnly, IsAuthorOrReadOnly, )
+    permission_classes = (
+        IsAuthenticatedOrReadOnly,
+        IsAuthorOrReadOnly,
+    )
 
     def get_serializer_class(self):
         if self.action == "list":
@@ -59,6 +62,10 @@ class PostViewSet(viewsets.ModelViewSet):
         url_path="like",
     )
     def like(self, request, pk):
+        """
+        Endpoint for performing like action
+        example: api/posts/pk/like/
+        """
         post = get_object_or_404(
             Post,
             id=pk,
@@ -81,6 +88,10 @@ class PostViewSet(viewsets.ModelViewSet):
         url_path="unlike",
     )
     def unlike(self, request, pk):
+        """
+        Endpoint for performing unlike action
+        example: api/posts/pk/unlike/
+        """
         post = get_object_or_404(
             Post,
             id=pk,
@@ -105,6 +116,10 @@ class PostViewSet(viewsets.ModelViewSet):
         url_path="upload_image",
     )
     def upload_image(self, request, pk=None):
+        """
+        Endpoint for performing upload image action
+        example: api/posts/pk/upload_image/
+        """
         comment = self.get_object()
         serializer = self.get_serializer(comment, data=request.data)
 
@@ -129,7 +144,10 @@ class CommentViewSet(viewsets.ModelViewSet):
     )
     serializer_class = CommentSerializer
     pagination_class = PostPagination
-    permission_classes = (IsAuthenticatedOrReadOnly, IsAuthorOrReadOnly, )
+    permission_classes = (
+        IsAuthenticatedOrReadOnly,
+        IsAuthorOrReadOnly,
+    )
 
     def get_serializer_class(self):
         if self.action == "list":
@@ -146,6 +164,10 @@ class CommentViewSet(viewsets.ModelViewSet):
         url_path="upload_image",
     )
     def upload_image(self, request, pk=None):
+        """
+        Endpoint for performing upload image action
+        example: api/comments/pk/upload_image/
+        """
         comment = self.get_object()
         serializer = self.get_serializer(comment, data=request.data)
 
