@@ -48,7 +48,7 @@ class UserViewSet(viewsets.ModelViewSet):
     @action(
         detail=True,
         methods=[
-            "POST",
+            "GET",
         ],
     )
     def follow(self, request, pk=None):
@@ -65,7 +65,7 @@ class UserViewSet(viewsets.ModelViewSet):
     @action(
         detail=True,
         methods=[
-            "DELETE",
+            "GET",
         ],
     )
     def unfollow(self, request, pk=None):
