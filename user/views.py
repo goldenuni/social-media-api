@@ -13,13 +13,6 @@ from user.serializers import (
 )
 
 
-class ManageUserView(generics.RetrieveUpdateAPIView):
-    serializer_class = UserSerializer
-
-    def get_object(self):
-        return self.request.user
-
-
 class UserViewSet(viewsets.ModelViewSet):
     serializer_class = UserSerializer
     queryset = get_user_model().objects.all()
@@ -59,7 +52,7 @@ class UserViewSet(viewsets.ModelViewSet):
         ],
     )
     def follow(self, request, pk=None):
-        """ "Follow the user. ex: users/<pk>/follow/"""
+        """Follow the user. ex: apiusers/<pk>/follow/"""
         user = request.user
         user_follow = self.get_object()
         Follow.objects.create(follower=user, following=user_follow)
@@ -73,7 +66,7 @@ class UserViewSet(viewsets.ModelViewSet):
         ],
     )
     def unfollow(self, request, pk=None):
-        """Unfollow the user. ex. users/<pk>/unfollow/"""
+        """Unfollow the user. ex. api/users/<pk>/unfollow/"""
         user = request.user
         user_follow = self.get_object()
         follow_conn = Follow.objects.filter(
@@ -82,3 +75,28 @@ class UserViewSet(viewsets.ModelViewSet):
         follow_conn.delete()
         serializer = self.get_serializer_class()(user_follow)
         return Response(serializer.data, status.HTTP_200_OK)
+
+    @action(
+        detail=False,
+        methods=["GET", "PUT", "PATCH", "DELETE"],
+    )
+    def me(self, request):
+        """Endpoint for managing user profile"""
+        user = request.user
+
+        if request.method == "GET":
+            serializer = self.get_serializer_class()(user)
+            return Response(serializer.data)
+
+        elif request.method in ["PUT", "PATCH", "DELETE"]:
+            self.check_object_permissions(request, user)
+            if request.method == "DELETE":
+                user.delete()
+                return Response(status=status.HTTP_204_NO_CONTENT)
+            else:
+                serializer = self.get_serializer_class()(
+                    user, data=request.data, partial=True
+                )
+                serializer.is_valid(raise_exception=True)
+                serializer.save()
+                return Response(serializer.data)
