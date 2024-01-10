@@ -12,7 +12,10 @@ from drf_spectacular.views import (
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("api/users/", include("user.urls", namespace="user")),
-    path("api/social_media/", include("social_media.urls", namespace="social-media")),
+    path(
+        "api/social_media/",
+        include("social_media.urls", namespace="social-media")
+    ),
     path("api/schema/", SpectacularAPIView.as_view(), name="schema"),
     path(
         "api/schema/swagger/",
