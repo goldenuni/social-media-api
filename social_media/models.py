@@ -30,7 +30,7 @@ class Post(models.Model):
         blank=True,
         upload_to=image_file_path,
     )
-    hashtags = models.ManyToManyField(Hashtag, related_name="posts")
+    hashtags = models.ManyToManyField(Hashtag, related_name="posts", blank=True)
 
     class Meta:
         ordering = ["-created_at"]

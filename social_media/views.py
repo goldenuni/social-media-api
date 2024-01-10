@@ -45,6 +45,10 @@ class PostViewSet(viewsets.ModelViewSet):
         IsAuthorOrReadOnly,
     )
 
+    @staticmethod
+    def _params_to_int(qs):
+        return [int(str_id) for str_id in qs.split(",")]
+
     def get_serializer_class(self):
         if self.action == "list":
             return PostListSerializer
@@ -55,6 +59,16 @@ class PostViewSet(viewsets.ModelViewSet):
         if self.action == "upload_image":
             return PostImageSerializer
         return PostSerializer
+
+    def get_queryset(self):
+        queryset = self.queryset
+        hashtags = self.request.query_params.get("hashtags")
+
+        if hashtags:
+            hashtags_id = self._params_to_int(hashtags)
+            queryset = queryset.filter(hashtags__id__in=hashtags_id)
+
+        return queryset.distinct()
 
     @action(
         detail=True,
