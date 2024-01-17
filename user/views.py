@@ -44,7 +44,7 @@ class UserViewSet(viewsets.ModelViewSet):
         if self.action == "list":
             return UserListSerializer
 
-        if self.action in ["retrieve", "follow", "unfollow"]:
+        if self.action == "retrieve":
             return UserDetailSerializer
 
         return UserSerializer
@@ -54,6 +54,7 @@ class UserViewSet(viewsets.ModelViewSet):
         methods=[
             "GET",
         ],
+        serializer_class=[UserDetailSerializer],
     )
     def follow(self, request, pk=None):
         """
@@ -71,6 +72,7 @@ class UserViewSet(viewsets.ModelViewSet):
         methods=[
             "GET",
         ],
+        serializer_class=[UserDetailSerializer],
     )
     def unfollow(self, request, pk=None):
         """

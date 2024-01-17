@@ -54,10 +54,6 @@ class PostViewSet(viewsets.ModelViewSet):
             return PostListSerializer
         if self.action == "retrieve":
             return PostDetailSerializer
-        if self.action == "like":
-            return LikeSerializer
-        if self.action == "upload_image":
-            return PostImageSerializer
         return PostSerializer
 
     def get_queryset(self):
@@ -74,6 +70,7 @@ class PostViewSet(viewsets.ModelViewSet):
         detail=True,
         methods=["POST"],
         url_path="like",
+        serializer_class=LikeSerializer,
     )
     def like(self, request, pk):
         """
@@ -128,6 +125,7 @@ class PostViewSet(viewsets.ModelViewSet):
         detail=True,
         methods=["POST"],
         url_path="upload_image",
+        serializer_class=PostImageSerializer,
     )
     def upload_image(self, request, pk=None):
         """
@@ -168,14 +166,13 @@ class CommentViewSet(viewsets.ModelViewSet):
             return CommentListSerializer
         if self.action == "retrieve":
             return CommentDetailSerializer
-        if self.action == "upload_image":
-            return CommentImageSerializer
         return CommentSerializer
 
     @action(
         detail=True,
         methods=["POST"],
         url_path="upload_image",
+        serializer_class=CommentImageSerializer,
     )
     def upload_image(self, request, pk=None):
         """
